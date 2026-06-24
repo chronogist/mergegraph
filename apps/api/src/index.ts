@@ -1,4 +1,8 @@
-import "dotenv/config";
+import { config } from "dotenv";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+config({ path: resolve(dirname(fileURLToPath(import.meta.url)), "../../../.env") });
 import { createQueue } from "./queue/boss.js";
 import { createServer } from "./server.js";
 import { createServices } from "./services/context.js";
