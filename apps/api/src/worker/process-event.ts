@@ -4,7 +4,9 @@ import type { WebhookJobData } from "../queue/boss.js";
 import type { Services } from "../services/context.js";
 import { handleInstallationEvent } from "./handlers/installation.js";
 import { handleIssueCommentEvent } from "./handlers/issue-comment.js";
+import { handleIssueEvent } from "./handlers/issue.js";
 import { handlePullRequestEvent } from "./handlers/pull-request.js";
+import { handleReleaseEvent } from "./handlers/release.js";
 
 export async function processEvent(services: Services, job: WebhookJobData) {
   const { deliveryId, event, action } = job;
@@ -21,6 +23,12 @@ export async function processEvent(services: Services, job: WebhookJobData) {
         break;
       case "pull_request":
         await handlePullRequestEvent(services, job);
+        break;
+      case "issues":
+        await handleIssueEvent(services, job);
+        break;
+      case "release":
+        await handleReleaseEvent(services, job);
         break;
       case "issue_comment":
         await handleIssueCommentEvent(services, job);

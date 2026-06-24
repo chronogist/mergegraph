@@ -59,7 +59,7 @@ export async function handleIssueCommentEvent(
   if (nodes.length === 0) {
     const emptyReply =
       "### MergeGraph\n\nNo relevant knowledge found yet for this repository. " +
-      "Knowledge is captured when PRs are merged — try again after your next merge.";
+      "Knowledge is captured when PRs merge, issues close, or releases publish — try again after more repo activity.";
 
     const octokit = await getInstallationOctokit(github, installationId);
     await postIssueComment(
