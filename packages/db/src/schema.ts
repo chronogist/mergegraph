@@ -61,7 +61,7 @@ export const knowledgeNodes = pgTable("knowledge_nodes", {
   sourceGithubId: bigint("source_github_id", { mode: "number" }),
   sourceUrl: text("source_url").notNull(),
   entities: jsonb("entities").notNull(),
-  embedding: vector("embedding", { dimensions: 1536 }),
+  embedding: vector("embedding", { dimensions: 2048 }),
   capsuleRootHash: text("capsule_root_hash"),
   capsulePayload: jsonb("capsule_payload"),
   validFrom: timestamp("valid_from", { withTimezone: true }),

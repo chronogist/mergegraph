@@ -11,7 +11,10 @@ import { assertCompute, assertGitHub } from "../../services/context.js";
 import type { WebhookJobData } from "../../queue/boss.js";
 
 type CommentPayload = {
-  comment?: { body?: string };
+  comment?: {
+    body?: string;
+    user?: { type?: string; login?: string };
+  };
   issue?: { number?: number };
   repository?: {
     id?: number;
@@ -38,13 +41,19 @@ export async function handleIssueCommentEvent(
     return;
   }
 
+  const authorType = payload.comment?.user?.type;
+  const authorLogin = payload.comment?.user?.login?.toLowerCase();
+  if (authorType === "Bot" || authorLogin?.endsWith("[bot]")) {
+    return;
+  }
+
   const question = parseMergeGraphQuestion(body);
   if (!question) return;
 
   const github = assertGitHub(services);
   const compute = assertCompute(services);
 
-  const embedding = await compute.embed(question);
+  const embedding = await compute.embed(question, "query");
   const nodes = await hybridRetrieve(services.db, repo.id, embedding);
 
   if (nodes.length === 0) {

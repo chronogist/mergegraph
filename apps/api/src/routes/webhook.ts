@@ -1,5 +1,4 @@
 import { Webhooks } from "@octokit/webhooks";
-import { eq } from "drizzle-orm";
 import type { FastifyInstance } from "fastify";
 import { webhookDeliveries, type Database } from "@mergegraph/db";
 import type PgBoss from "pg-boss";
@@ -68,24 +67,22 @@ export async function registerWebhookRoutes(
       payload.installation as { id?: number } | undefined;
     const installationId = installation?.id;
 
-    const [existing] = await db
-      .select({ deliveryId: webhookDeliveries.deliveryId })
-      .from(webhookDeliveries)
-      .where(eq(webhookDeliveries.deliveryId, deliveryId))
-      .limit(1);
+    const [inserted] = await db
+      .insert(webhookDeliveries)
+      .values({
+        deliveryId,
+        event,
+        action,
+        installationId,
+        payload,
+      })
+      .onConflictDoNothing({ target: webhookDeliveries.deliveryId })
+      .returning({ deliveryId: webhookDeliveries.deliveryId });
 
-    if (existing) {
+    if (!inserted) {
       request.log.info({ deliveryId, event }, "Duplicate webhook delivery");
       return reply.code(200).send({ ok: true, duplicate: true });
     }
-
-    await db.insert(webhookDeliveries).values({
-      deliveryId,
-      event,
-      action,
-      installationId,
-      payload,
-    });
 
     const job: WebhookJobData = {
       deliveryId,

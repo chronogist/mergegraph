@@ -45,16 +45,23 @@ In production, set these in your hosting dashboard (Render, Fly, etc.) — not i
 | Permission | Access | Why |
 |------------|--------|-----|
 | Metadata | Read | Required |
-| Pull requests | Read | PR body, reviews, merge state |
-| Issues | Read & write | Post `@mergegraph` replies (PRs use the issues API) |
+| Pull requests | Read & write | Read PR context; post `@mergegraph` replies on PR threads |
+| Issues | Read & write | Post `@mergegraph` replies on issues |
 | Contents | Read | Changed file paths |
 
 ## Webhook events
 
-- Installation
-- Installation repositories
+**Subscribe to these** (checkboxes in the app registration form):
+
 - Pull request
 - Issue comment
+
+**Automatic** — GitHub sends these to every GitHub App with webhooks active. They do **not** appear in the subscribe list and you cannot opt in or out:
+
+- Installation (`created`, `deleted`, …)
+- Installation repositories (`added`, `removed`)
+
+MergeGraph handles all four. The two you must check are **Pull request** and **Issue comment** — those drive Phase 1 (merged PR extraction and `@mergegraph` replies).
 
 ## Install on a test repo
 

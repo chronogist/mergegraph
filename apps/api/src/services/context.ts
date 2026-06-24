@@ -37,7 +37,13 @@ export function createServices(): Services {
           baseUrl: env.OG_COMPUTE_ROUTER_URL,
           apiKey: env.OG_COMPUTE_ROUTER_API_KEY,
           chatModel: env.OG_CHAT_MODEL,
-          embeddingModel: env.OG_EMBEDDING_MODEL,
+          embedding: env.OPENROUTER_API_KEY
+            ? {
+                baseUrl: env.OPENROUTER_BASE_URL,
+                apiKey: env.OPENROUTER_API_KEY,
+                model: env.OPENROUTER_EMBEDDING_MODEL,
+              }
+            : undefined,
         })
       : null;
 

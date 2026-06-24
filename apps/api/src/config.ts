@@ -14,8 +14,15 @@ const envSchema = z.object({
   HOST: z.string().default("0.0.0.0"),
   OG_COMPUTE_ROUTER_URL: z.string().url().optional(),
   OG_COMPUTE_ROUTER_API_KEY: z.string().optional(),
-  OG_CHAT_MODEL: z.string().default("gpt-4o-mini"),
-  OG_EMBEDDING_MODEL: z.string().default("text-embedding-3-small"),
+  OG_CHAT_MODEL: z.string().default("glm-5.1"),
+  OPENROUTER_API_KEY: z.string().optional(),
+  OPENROUTER_BASE_URL: z
+    .string()
+    .url()
+    .default("https://openrouter.ai/api/v1"),
+  OPENROUTER_EMBEDDING_MODEL: z
+    .string()
+    .default("nvidia/llama-nemotron-embed-vl-1b-v2:free"),
   SKIP_0G_STORAGE: z
     .enum(["true", "false", "1", "0"])
     .default("true")

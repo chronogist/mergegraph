@@ -38,7 +38,7 @@ export async function processEvent(services: Services, job: WebhookJobData) {
 
     await services.db
       .update(webhookDeliveries)
-      .set({ error: message })
+      .set({ error: message, processedAt: new Date() })
       .where(eq(webhookDeliveries.deliveryId, deliveryId));
 
     throw error;

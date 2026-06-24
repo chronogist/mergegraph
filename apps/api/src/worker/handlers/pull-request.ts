@@ -66,7 +66,7 @@ export async function handlePullRequestEvent(
 
   for (const node of extracted) {
     const textForEmbedding = `${node.title}\n${node.summary}\n${node.body}`;
-    const embedding = await compute.embed(textForEmbedding);
+    const embedding = await compute.embed(textForEmbedding, "document");
 
     const [inserted] = await services.db
       .insert(knowledgeNodes)

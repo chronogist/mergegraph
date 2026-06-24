@@ -15,6 +15,13 @@
       "when": 1782319210142,
       "tag": "0001_solid_loki",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1782325000000,
+      "tag": "0002_embedding_2048",
+      "breakpoints": true
     }
   ]
 }

@@ -1,0 +1,1 @@
+ALTER TABLE "knowledge_nodes" ALTER COLUMN "embedding" TYPE vector(2048);
