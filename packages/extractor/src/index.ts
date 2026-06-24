@@ -10,6 +10,7 @@ const nodeTypeSchema = z.enum([
   "migration",
   "lesson",
   "release_note",
+  "pr_merge",
 ]);
 
 const extractedNodeSchema = z.object({
@@ -31,6 +32,41 @@ const extractionResultSchema = z.object({
 });
 
 export type ExtractedNode = z.infer<typeof extractedNodeSchema>;
+
+function formatMergeTimestamp(mergedAt: string | null): string {
+  if (!mergedAt) return "unknown time";
+  return new Date(mergedAt).toUTCString();
+}
+
+export function buildMergeMetadataNode(pr: MergedPRContext): ExtractedNode {
+  const mergedBy = pr.mergedBy ?? "unknown";
+  const mergedAtLabel = formatMergeTimestamp(pr.mergedAt);
+
+  return {
+    type: "pr_merge",
+    title: `PR #${pr.number} merged by ${mergedBy}`,
+    summary:
+      `Pull request #${pr.number} ("${pr.title}") was merged by ${mergedBy} ` +
+      `on ${mergedAtLabel}.`,
+    body:
+      `Merge metadata for PR #${pr.number}:\n` +
+      `- Title: ${pr.title}\n` +
+      `- Author: ${pr.author ?? "unknown"}\n` +
+      `- Merged by: ${mergedBy}\n` +
+      `- Merged at: ${mergedAtLabel}` +
+      (pr.mergedAt ? ` (${pr.mergedAt})` : "") +
+      `\n- URL: ${pr.url}`,
+    confidence: 1,
+    entities: {
+      paths: pr.files,
+      components: [],
+      people: [mergedBy, pr.author].filter(
+        (person): person is string => Boolean(person && person !== "unknown"),
+      ),
+      labels: pr.labels,
+    },
+  };
+}
 
 const EXTRACTION_SYSTEM = `You extract structured engineering knowledge from pull request activity.
 Return JSON: { "nodes": [...] } with 0-3 nodes. Each node must have:

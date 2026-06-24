@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { knowledgeNodes } from "@mergegraph/db";
-import { extractFromMergedPR } from "@mergegraph/extractor";
+import { buildMergeMetadataNode, extractFromMergedPR } from "@mergegraph/extractor";
 import {
   fetchMergedPRContext,
   getInstallationOctokit,
@@ -57,14 +57,21 @@ export async function handlePullRequestEvent(
   );
 
   const extracted = await extractFromMergedPR(compute, prContext);
-  if (extracted.length === 0) {
-    console.info(`[pull_request] No knowledge extracted from PR #${pr.number}`);
-    return;
-  }
+  const nodes = [buildMergeMetadataNode(prContext), ...extracted];
+
+  await services.db
+    .delete(knowledgeNodes)
+    .where(
+      and(
+        eq(knowledgeNodes.repoId, repo.id),
+        eq(knowledgeNodes.sourceGithubId, pr.number),
+        eq(knowledgeNodes.type, "pr_merge"),
+      ),
+    );
 
   const nodeIds: string[] = [];
 
-  for (const node of extracted) {
+  for (const node of nodes) {
     const textForEmbedding = `${node.title}\n${node.summary}\n${node.body}`;
     const embedding = await compute.embed(textForEmbedding, "document");
 
@@ -109,6 +116,9 @@ export async function handlePullRequestEvent(
       rawContext: {
         title: prContext.title,
         body: prContext.body,
+        author: prContext.author,
+        mergedBy: prContext.mergedBy,
+        mergedAt: prContext.mergedAt,
         reviews: prContext.reviews,
         comments: prContext.comments,
         files: prContext.files,

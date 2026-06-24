@@ -11,6 +11,7 @@ export type MergedPRContext = {
   body: string;
   url: string;
   mergedAt: string | null;
+  mergedBy: string | null;
   author: string | null;
   labels: string[];
   files: string[];
@@ -41,6 +42,7 @@ const MERGED_PR_QUERY = `
         body
         url
         mergedAt
+        mergedBy { login }
         author { login }
         labels(first: 20) { nodes { name } }
         files(first: 100) { nodes { path } }
@@ -69,6 +71,7 @@ export async function fetchMergedPRContext(
         body: string | null;
         url: string;
         mergedAt: string | null;
+        mergedBy: { login: string } | null;
         author: { login: string } | null;
         labels: { nodes: Array<{ name: string }> };
         files: { nodes: Array<{ path: string }> };
@@ -86,6 +89,7 @@ export async function fetchMergedPRContext(
     body: pr.body ?? "",
     url: pr.url,
     mergedAt: pr.mergedAt,
+    mergedBy: pr.mergedBy?.login ?? null,
     author: pr.author?.login ?? null,
     labels: pr.labels.nodes.map((l) => l.name),
     files: pr.files.nodes.map((f) => f.path),
