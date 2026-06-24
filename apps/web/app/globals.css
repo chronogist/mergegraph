@@ -140,15 +140,18 @@ a {
 
 .hero-headline {
   margin: 0;
-  position: relative;
   width: min(900px, 100%);
-  padding: 0 1rem 3.5rem;
+  padding: 0 1rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
 }
 
 .hero-headline-main {
   font-size: clamp(3.5rem, 13vw, 7.5rem);
   font-weight: 800;
-  line-height: 0.95;
+  line-height: 1;
   letter-spacing: -0.04em;
   text-transform: uppercase;
   margin: 0;
@@ -156,17 +159,14 @@ a {
 }
 
 .hero-headline-script {
-  position: absolute;
-  left: 54%;
-  bottom: 0;
   font-family: var(--font-script);
-  font-size: clamp(2.4rem, 8vw, 5.5rem);
+  font-size: clamp(2.2rem, 7vw, 4.75rem);
   color: var(--orange);
   font-weight: 400;
-  transform: rotate(-6deg) translateX(-10%);
-  white-space: nowrap;
-  pointer-events: none;
-  line-height: 1;
+  transform: rotate(-4deg);
+  line-height: 1.1;
+  margin-top: -0.15rem;
+  padding-left: clamp(2rem, 12vw, 6rem);
 }
 
 .hero-sub {
@@ -707,17 +707,9 @@ a {
     margin-top: 1rem;
   }
 
-  .hero-headline {
-    padding-bottom: 1rem;
-  }
-
   .hero-headline-script {
-    position: static;
-    display: block;
-    transform: none;
-    margin: 0.25rem auto 0;
-    left: auto;
-    text-align: center;
+    padding-left: 0;
+    transform: rotate(-2deg);
   }
 
   .hero-wave-label {

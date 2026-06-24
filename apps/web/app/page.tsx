@@ -37,10 +37,10 @@ export default function HomePage() {
       <section className="hero-light" id="product">
         <Nav variant="light" />
         <div className="hero-content">
-          <div className="hero-headline">
-            <h1 className="hero-headline-main">Merge PRs</h1>
+          <h1 className="hero-headline">
+            <span className="hero-headline-main">Merge PRs</span>
             <span className="hero-headline-script">With context.</span>
-          </div>
+          </h1>
           <p className="hero-sub">
             The GitHub App that turns repository activity into a knowledge graph
             — so you can ask why decisions were made and get cited answers in
