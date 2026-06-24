@@ -6,12 +6,23 @@ const envSchema = z.object({
   WEBHOOK_SECRET: z.string().min(1),
   PRIVATE_KEY: z.string().optional(),
   PRIVATE_KEY_PATH: z.string().optional(),
-  DATABASE_URL: z.string().url(),
+  DATABASE_URL: z.string().min(1),
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
   PORT: z.coerce.number().default(3000),
   HOST: z.string().default("0.0.0.0"),
+  OG_COMPUTE_ROUTER_URL: z.string().url().optional(),
+  OG_COMPUTE_ROUTER_API_KEY: z.string().optional(),
+  OG_CHAT_MODEL: z.string().default("gpt-4o-mini"),
+  OG_EMBEDDING_MODEL: z.string().default("text-embedding-3-small"),
+  SKIP_0G_STORAGE: z
+    .enum(["true", "false", "1", "0"])
+    .default("true")
+    .transform((v) => v === "true" || v === "1"),
+  OG_RPC_URL: z.string().url().optional(),
+  OG_INDEXER_URL: z.string().url().optional(),
+  OG_STORAGE_PRIVATE_KEY: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -33,4 +44,25 @@ export function loadPrivateKey(env: Env): string | undefined {
     return readFileSync(env.PRIVATE_KEY_PATH, "utf8");
   }
   return undefined;
+}
+
+export function requireGitHubCredentials<T>(github: T | null, _env: Env): T {
+  if (!github) {
+    throw new Error(
+      "GitHub API credentials missing. Set APP_ID and PRIVATE_KEY_PATH in .env — " +
+        "required to fetch PR context and post @mergegraph replies. " +
+        "See docs/GITHUB_APP.md",
+    );
+  }
+  return github;
+}
+
+export function requireComputeCredentials<T>(compute: T | null, _env: Env): T {
+  if (!compute) {
+    throw new Error(
+      "0G Compute credentials missing. Set OG_COMPUTE_ROUTER_URL and " +
+        "OG_COMPUTE_ROUTER_API_KEY in .env — required for extraction and Q&A.",
+    );
+  }
+  return compute;
 }

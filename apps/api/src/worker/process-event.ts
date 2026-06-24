@@ -1,28 +1,42 @@
 import { eq } from "drizzle-orm";
-import { webhookDeliveries, type Database } from "@mergegraph/db";
+import { webhookDeliveries } from "@mergegraph/db";
 import type { WebhookJobData } from "../queue/boss.js";
+import type { Services } from "../services/context.js";
 import { handleInstallationEvent } from "./handlers/installation.js";
+import { handleIssueCommentEvent } from "./handlers/issue-comment.js";
+import { handlePullRequestEvent } from "./handlers/pull-request.js";
 
-export async function processEvent(db: Database, job: WebhookJobData) {
-  const { deliveryId, event, action, payload } = job;
+export async function processEvent(services: Services, job: WebhookJobData) {
+  const { deliveryId, event, action } = job;
 
-  console.info(`[worker] Processing ${event}${action ? `.${action}` : ""} (${deliveryId})`);
+  console.info(
+    `[worker] Processing ${event}${action ? `.${action}` : ""} (${deliveryId})`,
+  );
 
   try {
-    if (event === "installation" || event === "installation_repositories") {
-      await handleInstallationEvent(db, action, payload);
-    } else {
-      console.info(`[worker] No handler for ${event} yet — logged only`);
+    switch (event) {
+      case "installation":
+      case "installation_repositories":
+        await handleInstallationEvent(services.db, action, job.payload);
+        break;
+      case "pull_request":
+        await handlePullRequestEvent(services, job);
+        break;
+      case "issue_comment":
+        await handleIssueCommentEvent(services, job);
+        break;
+      default:
+        console.info(`[worker] No handler for ${event} — skipped`);
     }
 
-    await db
+    await services.db
       .update(webhookDeliveries)
       .set({ processedAt: new Date(), error: null })
       .where(eq(webhookDeliveries.deliveryId, deliveryId));
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
 
-    await db
+    await services.db
       .update(webhookDeliveries)
       .set({ error: message })
       .where(eq(webhookDeliveries.deliveryId, deliveryId));
