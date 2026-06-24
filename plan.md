@@ -1,8 +1,42 @@
 # MergeGraph MVP Plan
 
-Four phases from skeleton to production-ready. Check items off as they ship.
+Architecture first, then four build phases from skeleton to production-ready. Check items off as they ship.
 
-**Done when (overall MVP):** Install the app on a repo, merge a PR, ask `@mergegraph` a question, get a cited answer — with history backfilled and a minimal web UI.
+**Done when (overall MVP):** Install the app on a repo, merge a PR, ask `@mergegraph` a question, get a cited answer — with history backfilled and a minimal web UI. **MVP reached at end of Phase 2.**
+
+---
+
+## Build narrative
+
+> Git stores code. MergeGraph stores context.
+
+**Architecture** — Designed the system before writing code: one Postgres index (pgvector + pg-boss), 0G Compute for extraction, 0G Storage for durable Memory Capsules. No Redis, no graph DB — boring infra, fast to ship. See [architecture.md](./architecture.md).
+
+**Phase 0 — Skeleton** — GitHub App registered. Webhooks in → jobs queued → worker running. Installation lifecycle handled. End-to-end plumbing proven.
+
+**Phase 1 — Core Loop** — Merged PR → structured knowledge nodes. `@mergegraph` on any issue or PR → cited, grounded answers from repo history.
+
+**Phase 2 — Coverage + UX** — Closed issues and releases feed the graph. New repo install auto-backfills recent history. Web UI for search without leaving GitHub.
+
+**Phase 3 — Production Hardening** — Encryption, PR checks, rate limits, Marketplace listing. Next up.
+
+**Demo:** [Stablestream](https://github.com/chronogist/Stablestream) — merge an ADR PR, ask on the thread, get a cited reply in seconds. Works on judgment questions too ("is this a good fix?") by pulling tradeoffs from past decisions, not just docs.
+
+---
+
+## Architecture & Design
+
+**Goal:** Lock stack and data model before implementation. Clear upgrade path without over-building v1.
+
+**Done when:** `architecture.md` covers ingestion, extraction, storage, query, deployment, and explicit deferrals.
+
+- [x] System overview + design principles
+- [x] Postgres + pgvector + pg-boss (no Redis)
+- [x] 0G Compute Router + 0G Storage Memory Capsules
+- [x] Knowledge node / edge / capsule data model
+- [x] Webhook → queue → worker ingestion flow
+- [x] MVP phased rollout (0 → 3)
+- [x] Repository layout + open questions
 
 ---
 
@@ -108,3 +142,4 @@ Four phases from skeleton to production-ready. Check items off as they ship.
 | `4820cc6` | feat(worker): add optional merge summary comment on PR merge |
 | `5c74edf` | feat(api): add authenticated repo search and node routes |
 | `fa9ee9d` | feat(web): add minimal Next.js UI with GitHub OAuth |
+| `910a28d` | docs: mark Phase 2 complete and document web UI setup |
