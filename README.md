@@ -77,7 +77,16 @@ See [plan.md](./plan.md) for the full MVP checklist.
 
 - Node.js 22+
 - Docker (for local Postgres)
-- A [GitHub App](https://docs.github.com/en/apps/creating-github-apps) with webhooks enabled
+- A [GitHub App](https://docs.github.com/en/apps/creating-github-apps) — see [docs/GITHUB_APP.md](./docs/GITHUB_APP.md)
+
+### Credentials (what you actually need)
+
+| Phase | Required in `.env` |
+|-------|-------------------|
+| Phase 0 — webhook plumbing | `WEBHOOK_SECRET`, `DATABASE_URL` |
+| Phase 1 — PR extraction + `@mergegraph` | above + `APP_ID`, `PRIVATE_KEY_PATH`, `OG_COMPUTE_ROUTER_API_KEY` |
+
+`APP_ID` and `PRIVATE_KEY` are only needed when MergeGraph **calls GitHub's API** (fetch PR details, post replies). Phase 0 reads everything from the webhook payload itself.
 
 ### Setup
 
@@ -87,7 +96,8 @@ cd mergegraph
 npm install
 
 cp .env.example .env
-# Fill in APP_ID, WEBHOOK_SECRET, and PRIVATE_KEY_PATH
+# Phase 0: WEBHOOK_SECRET + DATABASE_URL
+# Phase 1: also APP_ID, PRIVATE_KEY_PATH, OG_COMPUTE_ROUTER_API_KEY
 
 docker compose up -d
 npm run db:migrate

@@ -31,14 +31,14 @@ Four phases from skeleton to production-ready. Check items off as they ship.
 
 **Done when:** Merged PR produces knowledge nodes; a mention on an issue/PR gets a grounded reply with GitHub links.
 
-- [ ] GitHub App permissions + webhook subscriptions for PRs and comments
-- [ ] GraphQL fetcher for merged PR context (body, reviews, files)
-- [ ] 0G Compute Router client + structured extraction prompts (Zod)
-- [ ] 0G Storage Memory Capsule upload
-- [ ] `knowledge_nodes` + `knowledge_edges` schema + pgvector embeddings
-- [ ] `pull_request` closed/merged → extraction pipeline
-- [ ] Hybrid retrieval (vector + 1-hop edges)
-- [ ] `issue_comment` → `@mergegraph` query handler + cited reply
+- [x] GitHub App permissions + webhook subscriptions for PRs and comments — see [docs/GITHUB_APP.md](./docs/GITHUB_APP.md)
+- [x] GraphQL fetcher for merged PR context (body, reviews, files)
+- [x] 0G Compute Router client + structured extraction prompts (Zod)
+- [x] 0G Storage Memory Capsule upload (`SKIP_0G_STORAGE=true` for local dev)
+- [x] `knowledge_nodes` + `knowledge_edges` schema + pgvector embeddings
+- [x] `pull_request` closed/merged → extraction pipeline
+- [x] Hybrid retrieval (vector + 1-hop edges)
+- [x] `issue_comment` → `@mergegraph` query handler + cited reply
 
 ---
 
@@ -73,7 +73,9 @@ Four phases from skeleton to production-ready. Check items off as they ship.
 
 ---
 
-## Commit log (Phase 0)
+## Commit log
+
+### Phase 0
 
 | Commit | Description |
 |--------|-------------|
@@ -81,3 +83,15 @@ Four phases from skeleton to production-ready. Check items off as they ship.
 | `b854c0d` | chore: scaffold monorepo and local dev infrastructure |
 | `8fa0ed0` | feat(db): add Drizzle schema for installations and webhooks |
 | `d250064` | feat(api): add webhook receiver, health check, and pg-boss worker |
+| `6a7e083` | docs: mark Phase 0 complete and add dev setup guide |
+
+### Phase 1
+
+| Commit | Description |
+|--------|-------------|
+| `5736399` | docs: explain when GitHub credentials are required |
+| `208b050` | feat(db): add knowledge graph schema with pgvector |
+| `951f554` | feat(github): add Octokit App client and PR GraphQL fetcher |
+| `cf75ffd` | feat: add 0G Compute, Storage, and extractor packages |
+| `89134a2` | feat(worker): add merged PR extraction and @mergegraph Q&A |
+| _pending_ | docs: mark Phase 1 complete |
