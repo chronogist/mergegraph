@@ -18,6 +18,7 @@ async function main() {
     env: services.env,
     db: services.db,
     boss,
+    services,
   });
 
   const shutdown = async () => {

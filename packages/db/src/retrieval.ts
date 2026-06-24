@@ -1,4 +1,4 @@
-import { sql, eq, inArray } from "drizzle-orm";
+import { and, sql, eq, inArray } from "drizzle-orm";
 import { knowledgeEdges, knowledgeNodes, type Database } from "./index.js";
 
 export type RetrievedNode = {
@@ -76,4 +76,97 @@ export async function hybridRetrieve(
   return [...byId.values()]
     .sort((a, b) => b.score - a.score)
     .slice(0, limit);
+}
+
+export type KnowledgeNodeDetail = {
+  id: string;
+  type: string;
+  title: string;
+  summary: string;
+  body: string;
+  confidence: number;
+  sourceEventType: string;
+  sourceGithubId: number | null;
+  sourceUrl: string;
+  entities: unknown;
+  validFrom: Date | null;
+  createdAt: Date;
+};
+
+export type NeighborNode = {
+  id: string;
+  type: string;
+  title: string;
+  summary: string;
+  sourceUrl: string;
+  relation: string;
+  direction: "outgoing" | "incoming";
+};
+
+export async function getNodeWithNeighbors(
+  db: Database,
+  repoId: number,
+  nodeId: string,
+): Promise<{ node: KnowledgeNodeDetail; neighbors: NeighborNode[] } | null> {
+  const [node] = await db
+    .select({
+      id: knowledgeNodes.id,
+      type: knowledgeNodes.type,
+      title: knowledgeNodes.title,
+      summary: knowledgeNodes.summary,
+      body: knowledgeNodes.body,
+      confidence: knowledgeNodes.confidence,
+      sourceEventType: knowledgeNodes.sourceEventType,
+      sourceGithubId: knowledgeNodes.sourceGithubId,
+      sourceUrl: knowledgeNodes.sourceUrl,
+      entities: knowledgeNodes.entities,
+      validFrom: knowledgeNodes.validFrom,
+      createdAt: knowledgeNodes.createdAt,
+    })
+    .from(knowledgeNodes)
+    .where(
+      and(eq(knowledgeNodes.id, nodeId), eq(knowledgeNodes.repoId, repoId)),
+    )
+    .limit(1);
+
+  if (!node) return null;
+
+  const outgoing = await db
+    .select({
+      id: knowledgeNodes.id,
+      type: knowledgeNodes.type,
+      title: knowledgeNodes.title,
+      summary: knowledgeNodes.summary,
+      sourceUrl: knowledgeNodes.sourceUrl,
+      relation: knowledgeEdges.relation,
+    })
+    .from(knowledgeEdges)
+    .innerJoin(knowledgeNodes, eq(knowledgeEdges.toNodeId, knowledgeNodes.id))
+    .where(eq(knowledgeEdges.fromNodeId, nodeId));
+
+  const incoming = await db
+    .select({
+      id: knowledgeNodes.id,
+      type: knowledgeNodes.type,
+      title: knowledgeNodes.title,
+      summary: knowledgeNodes.summary,
+      sourceUrl: knowledgeNodes.sourceUrl,
+      relation: knowledgeEdges.relation,
+    })
+    .from(knowledgeEdges)
+    .innerJoin(knowledgeNodes, eq(knowledgeEdges.fromNodeId, knowledgeNodes.id))
+    .where(eq(knowledgeEdges.toNodeId, nodeId));
+
+  const neighbors: NeighborNode[] = [
+    ...outgoing.map((n) => ({
+      ...n,
+      direction: "outgoing" as const,
+    })),
+    ...incoming.map((n) => ({
+      ...n,
+      direction: "incoming" as const,
+    })),
+  ];
+
+  return { node, neighbors };
 }

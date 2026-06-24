@@ -9,6 +9,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
+    "@fastify/cors": "^11.2.0",
     "@mergegraph/compute-0g": "*",
     "@mergegraph/db": "*",
     "@mergegraph/extractor": "*",
