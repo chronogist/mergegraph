@@ -1,14 +1,20 @@
 import { eq } from "drizzle-orm";
 import { webhookDeliveries } from "@mergegraph/db";
+import type PgBoss from "pg-boss";
 import type { WebhookJobData } from "../queue/boss.js";
 import type { Services } from "../services/context.js";
+import { enqueueBackfillFromInstallation } from "./backfill.js";
 import { handleInstallationEvent } from "./handlers/installation.js";
 import { handleIssueCommentEvent } from "./handlers/issue-comment.js";
 import { handleIssueEvent } from "./handlers/issue.js";
 import { handlePullRequestEvent } from "./handlers/pull-request.js";
 import { handleReleaseEvent } from "./handlers/release.js";
 
-export async function processEvent(services: Services, job: WebhookJobData) {
+export async function processEvent(
+  services: Services,
+  boss: PgBoss,
+  job: WebhookJobData,
+) {
   const { deliveryId, event, action } = job;
 
   console.info(
@@ -20,6 +26,7 @@ export async function processEvent(services: Services, job: WebhookJobData) {
       case "installation":
       case "installation_repositories":
         await handleInstallationEvent(services.db, action, job.payload);
+        await enqueueBackfillFromInstallation(boss, action, job.payload);
         break;
       case "pull_request":
         await handlePullRequestEvent(services, job);

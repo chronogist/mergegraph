@@ -7,6 +7,7 @@ type InstallationPayload = {
     id: number;
     account?: { login?: string; type?: string };
   };
+  repositories?: Array<{ id: number; full_name: string }>;
   repositories_added?: Array<{ id: number; full_name: string }>;
   repositories_removed?: Array<{ id: number; full_name: string }>;
 };
@@ -59,6 +60,36 @@ export async function handleInstallationEvent(
 
     console.info(
       `[installation] Upserted installation ${installation.id} (${installation.account.login})`,
+    );
+  }
+
+  const initialRepos =
+    action === "created" && data.repositories?.length
+      ? data.repositories
+      : [];
+
+  if (initialRepos.length) {
+    for (const repo of initialRepos) {
+      await db
+        .insert(repositories)
+        .values({
+          id: repo.id,
+          installationId: installation.id,
+          fullName: repo.full_name,
+          removedAt: null,
+        })
+        .onConflictDoUpdate({
+          target: repositories.id,
+          set: {
+            installationId: installation.id,
+            fullName: repo.full_name,
+            removedAt: null,
+          },
+        });
+    }
+
+    console.info(
+      `[installation] Registered ${initialRepos.length} repos on create for installation ${installation.id}`,
     );
   }
 
