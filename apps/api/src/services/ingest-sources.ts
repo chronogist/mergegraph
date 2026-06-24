@@ -3,7 +3,9 @@ import {
   buildMergeMetadataNode,
   extractFromClosedIssue,
   extractFromMergedPR,
+  type ExtractedNode,
 } from "@mergegraph/extractor";
+import type { MergedPRContext } from "@mergegraph/github";
 import {
   fetchClosedIssueContext,
   fetchMergedPRContext,
@@ -12,6 +14,12 @@ import {
 import type { Services } from "./context.js";
 import { assertCompute, assertGitHub } from "./context.js";
 import { persistKnowledgeNodes, sourceAlreadyIngested } from "./ingest.js";
+
+export type MergedPRIngestResult = {
+  nodeCount: number;
+  prContext?: MergedPRContext;
+  nodes?: ExtractedNode[];
+};
 
 export async function ingestMergedPR(
   services: Services,
@@ -23,7 +31,7 @@ export async function ingestMergedPR(
     deliveryId: string;
     skipIfExists?: boolean;
   },
-): Promise<number> {
+): Promise<MergedPRIngestResult> {
   if (params.skipIfExists) {
     const exists = await sourceAlreadyIngested(
       services.db,
@@ -31,11 +39,11 @@ export async function ingestMergedPR(
       "pull_request",
       params.prNumber,
     );
-    if (exists) return 0;
+    if (exists) return { nodeCount: 0 };
   }
 
   const [owner, repoName] = params.repoFullName.split("/");
-  if (!owner || !repoName) return 0;
+  if (!owner || !repoName) return { nodeCount: 0 };
 
   const github = assertGitHub(services);
   const compute = assertCompute(services);
@@ -80,7 +88,7 @@ export async function ingestMergedPR(
     nodes,
   );
 
-  return nodeIds.length;
+  return { nodeCount: nodeIds.length, prContext, nodes };
 }
 
 export async function ingestClosedIssue(

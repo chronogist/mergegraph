@@ -45,7 +45,7 @@ export async function processRepoBackfill(
 
   let prNodes = 0;
   for (const prNumber of prNumbers) {
-    prNodes += await ingestMergedPR(services, {
+    const result = await ingestMergedPR(services, {
       installationId,
       repoId,
       repoFullName: fullName,
@@ -53,6 +53,7 @@ export async function processRepoBackfill(
       deliveryId: `backfill-pr-${repoId}-${prNumber}`,
       skipIfExists: true,
     });
+    prNodes += result.nodeCount;
     await sleep(BACKFILL_DELAY_MS);
   }
 

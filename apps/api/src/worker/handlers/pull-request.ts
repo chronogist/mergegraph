@@ -1,4 +1,7 @@
+import { buildMergeSummaryMarkdown } from "@mergegraph/extractor";
+import { getInstallationOctokit, postIssueComment } from "@mergegraph/github";
 import type { Services } from "../../services/context.js";
+import { assertGitHub } from "../../services/context.js";
 import { ingestMergedPR } from "../../services/ingest-sources.js";
 import type { WebhookJobData } from "../../queue/boss.js";
 
@@ -29,7 +32,7 @@ export async function handlePullRequestEvent(
     return;
   }
 
-  const nodeCount = await ingestMergedPR(services, {
+  const result = await ingestMergedPR(services, {
     installationId,
     repoId: repo.id,
     repoFullName: repo.full_name,
@@ -38,6 +41,25 @@ export async function handlePullRequestEvent(
   });
 
   console.info(
-    `[pull_request] Extracted ${nodeCount} nodes from PR #${pr.number} (${repo.full_name})`,
+    `[pull_request] Extracted ${result.nodeCount} nodes from PR #${pr.number} (${repo.full_name})`,
   );
+
+  if (
+    services.env.MERGE_SUMMARY_COMMENT &&
+    result.prContext &&
+    result.nodes
+  ) {
+    const summary = buildMergeSummaryMarkdown(result.prContext, result.nodes);
+    if (summary) {
+      const [owner, repoName] = repo.full_name.split("/");
+      if (owner && repoName) {
+        const github = assertGitHub(services);
+        const octokit = await getInstallationOctokit(github, installationId);
+        await postIssueComment(octokit, owner, repoName, pr.number, summary);
+        console.info(
+          `[pull_request] Posted merge summary on PR #${pr.number} (${repo.full_name})`,
+        );
+      }
+    }
+  }
 }

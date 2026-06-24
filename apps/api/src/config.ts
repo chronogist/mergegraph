@@ -30,6 +30,10 @@ const envSchema = z.object({
   OG_RPC_URL: z.string().url().optional(),
   OG_INDEXER_URL: z.string().url().optional(),
   OG_STORAGE_PRIVATE_KEY: z.string().optional(),
+  MERGE_SUMMARY_COMMENT: z
+    .enum(["true", "false", "1", "0"])
+    .default("false")
+    .transform((v) => v === "true" || v === "1"),
   BACKFILL_PR_LIMIT: z.coerce.number().int().positive().default(200),
   BACKFILL_ISSUE_LIMIT: z.coerce.number().int().positive().default(100),
   GITHUB_APP_CLIENT_ID: z.string().optional(),
