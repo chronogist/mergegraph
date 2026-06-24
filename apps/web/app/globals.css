@@ -11,7 +11,7 @@
   --gray-400: #a3a3a3;
   --gray-600: #525252;
   --font: var(--font-dm), ui-sans-serif, system-ui, sans-serif;
-  --font-script: var(--font-script), "Brush Script MT", cursive;
+  --font-script: var(--font-pacifico), "Brush Script MT", cursive;
 }
 
 * {
@@ -124,39 +124,54 @@ a {
   padding: 1rem 2rem 0;
   position: relative;
   overflow: hidden;
+  min-height: 72vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0 1rem;
 }
 
 .hero-headline {
-  margin: 2.5rem 0 0;
+  margin: 0;
   position: relative;
-  display: inline-block;
+  width: min(900px, 100%);
+  padding: 0 1rem 3.5rem;
 }
 
 .hero-headline-main {
-  font-size: clamp(3.5rem, 14vw, 8.5rem);
+  font-size: clamp(3.5rem, 13vw, 7.5rem);
   font-weight: 800;
-  line-height: 0.92;
+  line-height: 0.95;
   letter-spacing: -0.04em;
   text-transform: uppercase;
   margin: 0;
+  text-align: center;
 }
 
 .hero-headline-script {
   position: absolute;
-  right: -4%;
-  bottom: -18%;
+  left: 54%;
+  bottom: 0;
   font-family: var(--font-script);
-  font-size: clamp(2.8rem, 10vw, 6.5rem);
+  font-size: clamp(2.4rem, 8vw, 5.5rem);
   color: var(--orange);
   font-weight: 400;
-  transform: rotate(-4deg);
+  transform: rotate(-6deg) translateX(-10%);
   white-space: nowrap;
   pointer-events: none;
+  line-height: 1;
 }
 
 .hero-sub {
   max-width: 34rem;
-  margin: 3.5rem auto 2rem;
+  margin: 0 auto 2rem;
   font-size: 1.125rem;
   line-height: 1.65;
   color: var(--gray-600);
@@ -165,8 +180,21 @@ a {
 .hero-wave {
   display: block;
   width: 100%;
-  margin-top: 4rem;
+  margin-top: auto;
   line-height: 0;
+  position: relative;
+}
+
+.hero-wave-label {
+  position: absolute;
+  left: 50%;
+  bottom: 28%;
+  transform: translateX(-50%);
+  font-family: var(--font-script);
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  color: var(--white);
+  white-space: nowrap;
+  z-index: 1;
 }
 
 .hero-wave svg {
@@ -679,10 +707,21 @@ a {
     margin-top: 1rem;
   }
 
+  .hero-headline {
+    padding-bottom: 1rem;
+  }
+
   .hero-headline-script {
     position: static;
     display: block;
     transform: none;
-    margin-top: 0.25rem;
+    margin: 0.25rem auto 0;
+    left: auto;
+    text-align: center;
+  }
+
+  .hero-wave-label {
+    bottom: 35%;
+    font-size: 1.35rem;
   }
 }

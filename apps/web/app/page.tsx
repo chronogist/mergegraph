@@ -36,17 +36,20 @@ export default function HomePage() {
       {/* Hero — Image 1 style */}
       <section className="hero-light" id="product">
         <Nav variant="light" />
-        <div className="hero-headline">
-          <h1 className="hero-headline-main">Merge PRs</h1>
-          <span className="hero-headline-script">With context.</span>
+        <div className="hero-content">
+          <div className="hero-headline">
+            <h1 className="hero-headline-main">Merge PRs</h1>
+            <span className="hero-headline-script">With context.</span>
+          </div>
+          <p className="hero-sub">
+            The GitHub App that turns repository activity into a knowledge graph
+            — so you can ask why decisions were made and get cited answers in
+            seconds.
+          </p>
+          <CtaButtons installUrl={installUrl} align="center" />
         </div>
-        <p className="hero-sub">
-          The GitHub App that turns repository activity into a knowledge graph —
-          so you can ask why decisions were made and get cited answers in
-          seconds.
-        </p>
-        <CtaButtons installUrl={installUrl} align="center" />
         <div className="hero-wave" aria-hidden>
+          <span className="hero-wave-label">MergeGraph</span>
           <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
             <path
               fill="#ff6b00"

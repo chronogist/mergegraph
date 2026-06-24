@@ -10,7 +10,7 @@ const dmSans = DM_Sans({
 const pacifico = Pacifico({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-script",
+  variable: "--font-pacifico",
 });
 
 export const metadata: Metadata = {
