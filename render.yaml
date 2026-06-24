@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: mergegraph
+    runtime: node
+    plan: free
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: npm run start
+    releaseCommand: npm run db:migrate
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: SKIP_0G_STORAGE
+        value: true
+      - key: OG_CHAT_MODEL
+        value: glm-5.1
+      - key: OPENROUTER_EMBEDDING_MODEL
+        value: nvidia/llama-nemotron-embed-vl-1b-v2:free
+      - key: OG_COMPUTE_ROUTER_URL
+        value: https://router-api.0g.ai/v1
+      - key: NPM_CONFIG_PRODUCTION
+        value: "false"
+      - key: DATABASE_URL
+        sync: false
+      - key: WEBHOOK_SECRET
+        sync: false
+      - key: APP_ID
+        sync: false
+      - key: PRIVATE_KEY
+        sync: false
+      - key: OG_COMPUTE_ROUTER_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
