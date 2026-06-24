@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: mergegraph
+      POSTGRES_PASSWORD: mergegraph
+      POSTGRES_DB: mergegraph
+    volumes:
+      - mergegraph_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mergegraph -d mergegraph"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mergegraph_pg:
