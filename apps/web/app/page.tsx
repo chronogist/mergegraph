@@ -1,3 +1,4 @@
+import { CtaButtons } from "./cta-buttons";
 import { getInstallUrl } from "@/lib/env";
 
 const FEATURES = [
@@ -79,19 +80,7 @@ export default function HomePage() {
             cited from your repo history.
           </p>
 
-          <div className="cta-row">
-            <a className="btn btn-primary" href={installUrl}>
-              Install on GitHub
-            </a>
-            <a
-              className="btn btn-ghost"
-              href="https://github.com/chronogist/mergegraph"
-              target="_blank"
-              rel="noreferrer"
-            >
-              View source
-            </a>
-          </div>
+          <CtaButtons installUrl={installUrl} />
 
           <p className="cta-note">
             You&apos;ll pick which repos MergeGraph can access — same flow as
@@ -150,9 +139,7 @@ export default function HomePage() {
           <p className="section-lead" style={{ margin: "0 auto 1.5rem" }}>
             Install takes under a minute. Pick your repos and start merging.
           </p>
-          <a className="btn btn-primary" href={installUrl}>
-            Install MergeGraph
-          </a>
+          <CtaButtons installUrl={installUrl} />
         </section>
 
         <footer className="footer">

@@ -150,7 +150,7 @@ a {
 .cta-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.85rem;
+  gap: 0.75rem;
   justify-content: center;
   align-items: center;
 }
@@ -166,28 +166,52 @@ a {
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .btn:hover {
   transform: translateY(-1px);
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, var(--accent), #2563eb);
+.btn-install {
+  padding: 1rem 1.75rem;
+  font-size: 1.05rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
   color: #fff;
-  border: none;
-  box-shadow: 0 8px 32px var(--accent-glow);
+  border: 1px solid rgba(147, 197, 253, 0.35);
+  box-shadow:
+    0 0 0 1px rgba(59, 130, 246, 0.2),
+    0 10px 40px var(--accent-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
-.btn-primary:hover {
-  box-shadow: 0 12px 40px var(--accent-glow);
+.btn-install:hover {
+  box-shadow:
+    0 0 0 1px rgba(96, 165, 250, 0.4),
+    0 14px 48px var(--accent-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-.btn-ghost {
+.btn-secondary {
+  padding: 0.75rem 1.1rem;
+  font-size: 0.88rem;
+  font-weight: 500;
   border: 1px solid var(--border);
-  background: rgba(17, 24, 39, 0.6);
+  background: rgba(12, 16, 24, 0.65);
+  color: var(--muted);
+}
+
+.btn-secondary:hover {
   color: var(--text);
+  border-color: rgba(148, 163, 184, 0.3);
+  background: rgba(17, 24, 39, 0.8);
+}
+
+.btn-secondary svg {
+  width: 1rem;
+  height: 1rem;
+  opacity: 0.85;
 }
 
 .cta-note {
