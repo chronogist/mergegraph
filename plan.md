@@ -12,16 +12,16 @@ Four phases from skeleton to production-ready. Check items off as they ship.
 
 **Done when:** A webhook is received, persisted, enqueued, and processed without blocking the HTTP response.
 
-- [ ] `plan.md` — MVP broken into 4 phases
-- [ ] Monorepo scaffold (npm workspaces, TypeScript, docker-compose)
-- [ ] PostgreSQL schema — installations, webhook deliveries
-- [ ] pg-boss job queue wired to Postgres
-- [ ] Fastify HTTP server
-- [ ] `GET /health` — DB connectivity + queue depth
-- [ ] `POST /api/webhook` — signature verification, idempotency, enqueue
-- [ ] Worker — `process-event` job consumer
-- [ ] `installation` event handler (created / deleted)
-- [ ] `.env.example` + local dev instructions (Smee.io)
+- [x] `plan.md` — MVP broken into 4 phases
+- [x] Monorepo scaffold (npm workspaces, TypeScript, docker-compose)
+- [x] PostgreSQL schema — installations, webhook deliveries
+- [x] pg-boss job queue wired to Postgres
+- [x] Fastify HTTP server
+- [x] `GET /health` — DB connectivity + queue depth
+- [x] `POST /api/webhook` — signature verification, idempotency, enqueue
+- [x] Worker — `process-event` job consumer
+- [x] `installation` event handler (created / deleted)
+- [x] `.env.example` + local dev instructions (Smee.io)
 
 ---
 
@@ -77,4 +77,7 @@ Four phases from skeleton to production-ready. Check items off as they ship.
 
 | Commit | Description |
 |--------|-------------|
-| — | _filled in as commits land_ |
+| `7ab4247` | docs: add MVP plan with 4 phases |
+| `b854c0d` | chore: scaffold monorepo and local dev infrastructure |
+| `8fa0ed0` | feat(db): add Drizzle schema for installations and webhooks |
+| `d250064` | feat(api): add webhook receiver, health check, and pg-boss worker |

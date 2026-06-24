@@ -61,23 +61,59 @@ See [architecture.md](./architecture.md) for the full system design, data model,
 
 ## Project status
 
-Early development. Architecture is defined; implementation has not started.
+See [plan.md](./plan.md) for the full MVP checklist.
 
 | Phase | Status |
 |-------|--------|
 | Architecture & design | Done |
-| Phase 0 — GitHub App skeleton + webhook pipeline | Planned |
-| Phase 1 — PR extraction + `@mergegraph` Q&A | Planned |
+| Phase 0 — GitHub App skeleton + webhook pipeline | **Done** |
+| Phase 1 — PR extraction + `@mergegraph` Q&A | In progress |
 | Phase 2 — Backfill, issues/releases, web UI | Planned |
+| Phase 3 — Production hardening | Planned |
 
 ## Development
+
+### Prerequisites
+
+- Node.js 22+
+- Docker (for local Postgres)
+- A [GitHub App](https://docs.github.com/en/apps/creating-github-apps) with webhooks enabled
+
+### Setup
 
 ```bash
 git clone https://github.com/chronogist/mergegraph.git
 cd mergegraph
+npm install
+
+cp .env.example .env
+# Fill in APP_ID, WEBHOOK_SECRET, and PRIVATE_KEY_PATH
+
+docker compose up -d
+npm run db:migrate
+npm run dev
 ```
 
-Local setup and run instructions will be added as Phase 0 is implemented.
+### Local webhooks (Smee.io)
+
+```bash
+# Terminal 1 — forward GitHub webhooks to your machine
+npx smee -u https://smee.io/YOUR_CHANNEL -t http://localhost:3000/api/webhook
+
+# Terminal 2
+npm run dev
+```
+
+Set the Smee URL as the **Webhook URL** in your GitHub App settings.
+
+### Verify
+
+```bash
+curl http://localhost:3000/health
+# → { "status": "ok", "queue": { "name": "process-event", "pending": 0 }, ... }
+```
+
+Install the app on a test repo and trigger an event — check server logs for `[worker] Processing ...`.
 
 ## License
 
