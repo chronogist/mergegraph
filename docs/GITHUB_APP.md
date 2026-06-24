@@ -78,6 +78,24 @@ Set `NEXT_PUBLIC_GITHUB_APP_SLUG` in `.env` to match your app's public slug.
 
 When a user clicks install, GitHub handles account selection and repo access — no credentials required from repo users.
 
+## Deploy landing page to Vercel
+
+The API stays on Render (or your host). Only `apps/web` goes to Vercel.
+
+1. [vercel.com](https://vercel.com) → **Add New Project** → import `chronogist/mergegraph`
+2. **Root Directory** → Edit → set to `apps/web`
+3. Framework should auto-detect **Next.js** ( `vercel.json` in that folder sets monorepo install/build)
+4. **Environment variables** (Production):
+
+   | Name | Example |
+   |------|---------|
+   | `NEXT_PUBLIC_GITHUB_APP_SLUG` | your app slug from GitHub App settings |
+
+5. Deploy
+6. In **GitHub App settings** → set **Homepage URL** to your Vercel URL (e.g. `https://mergegraph.vercel.app`)
+
+The **Install on GitHub** button uses `https://github.com/apps/{slug}/installations/new` — no OAuth env vars needed for the landing page.
+
 ## Install on a test repo
 
 1. App **Public page** → **Install App** → pick a test repo
