@@ -16,7 +16,7 @@ Architecture first, then four build phases from skeleton to production-ready. Ch
 
 **Phase 1 — Core Loop** — Merged PR → structured knowledge nodes. `@mergegraph` on any issue or PR → cited, grounded answers from repo history.
 
-**Phase 2 — Coverage + UX** — Closed issues and releases feed the graph. New repo install auto-backfills recent history. Web UI for search without leaving GitHub.
+**Phase 2 — Coverage + UX** — Closed issues and releases feed the graph. New repo install auto-backfills recent history. Landing page with GitHub App install link.
 
 **Phase 3 — Production Hardening** — Encryption, PR checks, rate limits, Marketplace listing. Next up.
 
@@ -86,8 +86,7 @@ Architecture first, then four build phases from skeleton to production-ready. Ch
 - [x] `release.published` extraction pipeline
 - [x] Backfill job on repo install (last N PRs + issues)
 - [x] Optional merge summary comment on PR merge
-- [x] Minimal web UI — repo list, search, node detail
-- [x] GitHub OAuth via App for web UI auth
+- [x] Landing page — product overview + GitHub App install link
 
 ---
 

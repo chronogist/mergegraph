@@ -1,18 +1,11 @@
-export function getWebEnv() {
-  const clientId = process.env.GITHUB_APP_CLIENT_ID;
-  const clientSecret = process.env.GITHUB_APP_CLIENT_SECRET;
-  const apiUrl = process.env.MERGEGRAPH_API_URL ?? "http://localhost:3000";
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3001";
-
-  return { clientId, clientSecret, apiUrl, appUrl };
-}
-
-export function requireOAuthEnv() {
-  const env = getWebEnv();
-  if (!env.clientId || !env.clientSecret) {
-    throw new Error(
-      "GITHUB_APP_CLIENT_ID and GITHUB_APP_CLIENT_SECRET are required for web OAuth",
-    );
+export function getInstallUrl(): string {
+  const slug = process.env.NEXT_PUBLIC_GITHUB_APP_SLUG;
+  if (slug) {
+    return `https://github.com/apps/${slug}/installations/new`;
   }
-  return { ...env, clientId: env.clientId, clientSecret: env.clientSecret };
+
+  const url = process.env.NEXT_PUBLIC_GITHUB_APP_INSTALL_URL;
+  if (url) return url;
+
+  return "https://github.com/apps/mergegraph/installations/new";
 }

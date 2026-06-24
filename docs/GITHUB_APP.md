@@ -65,19 +65,18 @@ In production, set these in your hosting dashboard (Render, Fly, etc.) — not i
 
 MergeGraph handles all six event types above.
 
-## Web UI OAuth
+## Landing page + install link
 
-For the Phase 2 web UI, set these on your server and in `apps/web`:
+The web app (`apps/web`) is a public landing page with an **Install on GitHub** button.
 
-| Variable | Where | Purpose |
-|----------|-------|---------|
-| `GITHUB_APP_CLIENT_ID` | API + web | OAuth authorize |
-| `GITHUB_APP_CLIENT_SECRET` | API + web | OAuth token exchange |
-| `WEB_UI_URL` | API | CORS origin (e.g. `http://localhost:3001`) |
-| `NEXT_PUBLIC_APP_URL` | web | OAuth callback base URL |
-| `MERGEGRAPH_API_URL` | web | Backend API (e.g. `http://localhost:3000`) |
+| Setting | Value |
+|---------|-------|
+| **Homepage URL** | Your landing page (e.g. `https://mergegraph.dev` or `http://localhost:3001`) |
+| **App slug** | Used in install URL: `https://github.com/apps/{slug}/installations/new` |
 
-In your GitHub App settings, set **Callback URL** to `{NEXT_PUBLIC_APP_URL}/api/auth/callback`.
+Set `NEXT_PUBLIC_GITHUB_APP_SLUG` in `.env` to match your app's public slug.
+
+When a user clicks install, GitHub handles account selection and repo access — no credentials required from repo users.
 
 ## Install on a test repo
 
