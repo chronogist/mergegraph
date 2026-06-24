@@ -17,14 +17,20 @@ function PlayIcon() {
   );
 }
 
-export function CtaButtons({ installUrl }: { installUrl: string }) {
+export function CtaButtons({
+  installUrl,
+  align = "center",
+}: {
+  installUrl: string;
+  align?: "center" | "left";
+}) {
   return (
-    <div className="cta-row">
-      <a className="btn btn-install" href={installUrl}>
+    <div className={`cta-row cta-row--${align}`}>
+      <a className="btn-hero-install" href={installUrl}>
         Install on GitHub
       </a>
       <a
-        className="btn btn-secondary"
+        className="btn-hero-secondary"
         href={DEMO_URL}
         target="_blank"
         rel="noreferrer"
@@ -33,7 +39,7 @@ export function CtaButtons({ installUrl }: { installUrl: string }) {
         Watch demo
       </a>
       <a
-        className="btn btn-secondary"
+        className="btn-hero-secondary"
         href={GITHUB_URL}
         target="_blank"
         rel="noreferrer"

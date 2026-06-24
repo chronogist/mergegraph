@@ -1,152 +1,118 @@
 import { CtaButtons } from "./cta-buttons";
+import { IntelligenceMockup, LaptopMockup } from "./mockup";
+import { Nav } from "./nav";
 import { getInstallUrl } from "@/lib/env";
 
-const FEATURES = [
-  {
-    num: "01",
-    title: "Captures context automatically",
-    body: "Merged PRs, closed issues, and releases become structured knowledge nodes — decisions, tradeoffs, incidents, lessons.",
-  },
-  {
-    num: "02",
-    title: "Answers with citations",
-    body: "Mention @mergegraph on any issue or PR. Get grounded replies linked back to the GitHub threads they came from.",
-  },
-  {
-    num: "03",
-    title: "Backfills on install",
-    body: "Add MergeGraph to a repo and it indexes recent history so new teammates aren't starting from zero.",
-  },
+const LUCKILY_LINES = [
+  "Luckily the PR context is captured.",
+  "Luckily the ADR is searchable.",
+  "Luckily @mergegraph has the answer.",
+  "Luckily you don't dig through 200 closed issues.",
 ];
 
-const STEPS = [
+const PILLARS = [
   {
-    title: "Install",
-    body: "Connect MergeGraph to your org or repo and choose which repositories it can access.",
+    variant: "orange" as const,
+    title: "Relevant.",
+    body: "Every answer is grounded in your repo's PRs, issues, and releases — not generic AI guesses.",
   },
   {
-    title: "Build",
-    body: "Merge PRs, close issues, ship releases — context is extracted in the background.",
+    variant: "white" as const,
+    title: "Cited.",
+    body: "Responses link back to the GitHub threads they came from. Ask why, get sources.",
   },
   {
-    title: "Ask",
-    body: "@mergegraph why was this built? What incidents hit this module? Get cited answers in seconds.",
+    variant: "outline" as const,
+    title: "Living.",
+    body: "Knowledge grows with every merge and close. Install once, backfill history, never start from zero.",
   },
-];
-
-const QUESTIONS = [
-  "Why was this feature implemented?",
-  "What problem did this migration solve?",
-  "Is this a good fix?",
-  "What decisions affect auth?",
 ];
 
 export default function HomePage() {
   const installUrl = getInstallUrl();
 
   return (
-    <div className="page">
-      <main className="container">
-        <nav className="nav">
-          <div className="logo">
-            <div className="logo-mark" aria-hidden />
-            MergeGraph
+    <>
+      {/* Hero — Image 1 style */}
+      <section className="hero-light" id="product">
+        <Nav variant="light" />
+        <div className="hero-headline">
+          <h1 className="hero-headline-main">Merge PRs</h1>
+          <span className="hero-headline-script">With context.</span>
+        </div>
+        <p className="hero-sub">
+          The GitHub App that turns repository activity into a knowledge graph —
+          so you can ask why decisions were made and get cited answers in
+          seconds.
+        </p>
+        <CtaButtons installUrl={installUrl} align="center" />
+        <div className="hero-wave" aria-hidden>
+          <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path
+              fill="#ff6b00"
+              d="M0,80 C360,120 720,40 1080,80 C1260,100 1380,90 1440,80 L1440,120 L0,120 Z"
+            />
+          </svg>
+        </div>
+      </section>
+
+      {/* Luckily — Image 2 style */}
+      <section className="section-luckily">
+        <div className="section-luckily-top">
+          <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+            <span className="logo-script">MergeGraph</span>
           </div>
-          <a
-            className="nav-link"
-            href="https://github.com/chronogist/mergegraph"
-            target="_blank"
-            rel="noreferrer"
-          >
-            GitHub
-          </a>
-        </nav>
-
-        <section className="hero">
-          <div className="eyebrow">
-            <span className="eyebrow-dot" aria-hidden />
-            GitHub App · Built on 0G
+        </div>
+        <div className="section-luckily-body">
+          <div>
+            <h2 className="luckily-headline">
+              Luckily it remembered the <em>why.</em>
+            </h2>
+            <ul className="luckily-lines">
+              {LUCKILY_LINES.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
           </div>
+          <LaptopMockup />
+        </div>
+      </section>
 
-          <h1>
-            Git stores code.
-            <br />
-            <span>MergeGraph stores context.</span>
-          </h1>
+      {/* Intelligence — Image 3 style */}
+      <section className="section-intel">
+        <p className="intel-eyebrow">Knowledge layer</p>
+        <h2 className="intel-headline">Deep context, zero config.</h2>
+        <IntelligenceMockup />
+      </section>
 
-          <p className="hero-lead">
-            Turn repository activity into a living knowledge graph. Ask why
-            decisions were made, what broke, and what changed — with answers
-            cited from your repo history.
-          </p>
+      {/* Pillars — Image 4 style */}
+      <section className="section-pillars">
+        <Nav variant="dark" />
+        <div className="pillars-grid">
+          {PILLARS.map((pillar) => (
+            <article
+              key={pillar.title}
+              className={`pillar pillar--${pillar.variant}`}
+            >
+              <h2>{pillar.title}</h2>
+              <p>{pillar.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
 
-          <CtaButtons installUrl={installUrl} />
+      <section className="section-footer-logo" aria-hidden>
+        <span className="logo-script logo-script--orange logo-script--huge">
+          MergeGraph
+        </span>
+      </section>
 
-          <p className="cta-note">
-            You&apos;ll pick which repos MergeGraph can access — same flow as
-            Dependabot or Codecov.
-          </p>
-        </section>
-
-        <section className="section">
-          <h2 className="section-title">How it works</h2>
-          <p className="section-lead">
-            No manual docs. No wiki rot. Context flows from the work you
-            already do.
-          </p>
-          <div className="flow">
-            {STEPS.map((step) => (
-              <div key={step.title} className="flow-step">
-                <strong>{step.title}</strong>
-                <span>{step.body}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="section">
-          <h2 className="section-title">What you get</h2>
-          <p className="section-lead">
-            Engineering knowledge that outlasts contributor turnover.
-          </p>
-          <div className="grid-3">
-            {FEATURES.map((feature) => (
-              <article key={feature.num} className="card">
-                <span className="card-num">{feature.num}</span>
-                <h3>{feature.title}</h3>
-                <p>{feature.body}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="section">
-          <h2 className="section-title">Ask anything</h2>
-          <p className="section-lead">
-            @mergegraph on any issue or pull request thread.
-          </p>
-          <div className="questions">
-            {QUESTIONS.map((q) => (
-              <span key={q} className="chip">
-                {q}
-              </span>
-            ))}
-          </div>
-        </section>
-
-        <section className="section" style={{ textAlign: "center" }}>
-          <h2 className="section-title">Ready to remember why?</h2>
-          <p className="section-lead" style={{ margin: "0 auto 1.5rem" }}>
-            Install takes under a minute. Pick your repos and start merging.
-          </p>
-          <CtaButtons installUrl={installUrl} />
-        </section>
-
-        <footer className="footer">
-          <span>MergeGraph — turn every merge into lasting engineering knowledge.</span>
-          <a href={installUrl}>Install</a>
-        </footer>
-      </main>
-    </div>
+      {/* Final install CTA */}
+      <section className="section-install" id="install">
+        <h2>Ready to remember why?</h2>
+        <p>Install on GitHub, pick your repos, start merging.</p>
+        <CtaButtons installUrl={installUrl} align="center" />
+      </section>
+    </>
   );
 }
