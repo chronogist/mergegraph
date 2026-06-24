@@ -94,4 +94,4 @@ Four phases from skeleton to production-ready. Check items off as they ship.
 | `951f554` | feat(github): add Octokit App client and PR GraphQL fetcher |
 | `cf75ffd` | feat: add 0G Compute, Storage, and extractor packages |
 | `89134a2` | feat(worker): add merged PR extraction and @mergegraph Q&A |
-| _pending_ | docs: mark Phase 1 complete |
+| `74da8c5` | docs: mark Phase 1 complete |
