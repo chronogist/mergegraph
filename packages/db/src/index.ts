@@ -3,6 +3,7 @@ import postgres from "postgres";
 import * as schema from "./schema.js";
 
 export * from "./schema.js";
+export * from "./retrieval.js";
 
 export function createDb(connectionString: string) {
   const client = postgres(connectionString, { max: 10 });
