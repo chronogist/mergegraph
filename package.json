@@ -7,7 +7,7 @@
   ],
   "scripts": {
     "dev": "npm run dev -w @mergegraph/api",
-    "build": "npm run build -w @mergegraph/db && npm run build -w @mergegraph/api",
+    "build": "npm run build -w @mergegraph/db && npm run build -w @mergegraph/compute-0g && npm run build -w @mergegraph/github && npm run build -w @mergegraph/storage-0g && npm run build -w @mergegraph/extractor && npm run build -w @mergegraph/api",
     "db:generate": "npm run generate -w @mergegraph/db",
     "db:migrate": "npm run migrate -w @mergegraph/db",
     "db:studio": "npm run studio -w @mergegraph/db"
