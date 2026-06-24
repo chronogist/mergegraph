@@ -83,15 +83,15 @@ See [plan.md](./plan.md) for the full MVP checklist.
 
 **Repo users never configure credentials** — they only install the GitHub App.
 
-Only the person **hosting MergeGraph** sets secrets (on Render/Fly/etc. in production, or `.env` locally).
+**You** (the server host) set secrets once. Webhooks tell MergeGraph *what* happened; the GitHub API keys let it *read PR details* and *post `@mergegraph` replies*.
 
-| Mode | `.env` needed |
-|------|---------------|
-| **Local test (recommended)** | `DATABASE_URL`, `WEBHOOK_SECRET`, `DEV_MOCK=true` |
-| **Local test with real GitHub + 0G** | above + `APP_ID`, `PRIVATE_KEY_PATH`, `OG_COMPUTE_ROUTER_API_KEY` |
-| **Production** | Same secrets in hosting dashboard — not in git |
+| Variable | Purpose |
+|----------|---------|
+| `WEBHOOK_SECRET` | Verify webhooks are from GitHub |
+| `APP_ID` + `PRIVATE_KEY_PATH` | Authenticate API calls as your GitHub App |
+| `OG_COMPUTE_ROUTER_API_KEY` | AI extraction and Q&A |
 
-With `DEV_MOCK=true`, run the full Phase 1 loop locally via `scripts/test-webhook.mjs` — no external API keys.
+Production: set these in your hosting dashboard (Render/Fly), not in git.
 
 ### Setup
 
@@ -101,7 +101,7 @@ cd mergegraph
 npm install
 
 cp .env.example .env
-# Local: DATABASE_URL + WEBHOOK_SECRET + DEV_MOCK=true is enough
+# Fill in WEBHOOK_SECRET, APP_ID, PRIVATE_KEY_PATH, OG_COMPUTE_ROUTER_API_KEY
 
 docker compose up -d
 npm run db:migrate

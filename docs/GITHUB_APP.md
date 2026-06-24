@@ -1,98 +1,63 @@
 # GitHub App Setup
 
-MergeGraph runs as a **GitHub App**.
+MergeGraph runs as a **GitHub App**. You register one app; your server runs it; users install it on their repos.
 
-## Who configures credentials?
+## Who configures what?
 
-| Person | What they do | Needs `.env`? |
-|--------|--------------|---------------|
-| **Repo user** (your teammate) | Installs the app on their repo | **No** — click "Install" in GitHub |
-| **MergeGraph operator** (you, hosting the server) | Runs the backend | **Yes** — secrets on the server only |
-| **Local developer** | Tests without real APIs | **No** — use `DEV_MOCK=true` (2 vars only) |
+| Person | What they do | Needs secrets? |
+|--------|--------------|----------------|
+| **Repo user** | Clicks "Install MergeGraph" on their org/repo | **No** |
+| **You (server host)** | Runs the MergeGraph backend | **Yes** — once, on your server |
 
-End users never see or touch credentials. They install a GitHub App like any other (Dependabot, Codecov, etc.).
+Repo users never see API keys. They install the app the same way they install Dependabot or Codecov.
 
-Production secrets belong in your **hosting provider's environment** (Render, Fly, Railway) — not committed to git.
+## Why does the host need GitHub keys?
 
-## Local testing without credentials
+Webhooks only tell you *that* something happened. They don't include everything MergeGraph needs.
 
-```bash
-# .env — only these two are required with mock mode
-DATABASE_URL=postgresql://mergegraph:mergegraph@localhost:5432/mergegraph
-WEBHOOK_SECRET=local-test-secret
-DEV_MOCK=true
-```
+| Action | Webhook gives you | GitHub API needed? |
+|--------|-------------------|-------------------|
+| PR merged | PR number, repo name | **Yes** — fetch full body, reviews, changed files |
+| `@mergegraph` question | Comment text | **Yes** — post the reply comment back |
 
-Then run `node scripts/test-webhook.mjs pull_request` and `node scripts/test-webhook.mjs issue_comment` — full Phase 1 loop, no GitHub or 0G keys.
-
----
-
-Not every credential is needed on day one — it depends on what you're testing.
-
-## What each credential does
-
-| Variable | Required when | Purpose |
-|----------|---------------|---------|
-| `WEBHOOK_SECRET` | **Always** (any phase) | Verifies incoming webhooks are from GitHub, not an imposter |
-| `APP_ID` | **Phase 1+** | Identifies your app when requesting API access tokens |
-| `PRIVATE_KEY` | **Phase 1+** | Signs JWTs to generate installation access tokens |
-| `DATABASE_URL` | **Always** | Postgres for index, queue, and app state |
-
-### Why Phase 0 only needs `WEBHOOK_SECRET`
-
-Phase 0 receives webhooks and reads data **from the webhook payload itself** (installation ID, account name, repo list). It never calls GitHub's API.
+Your server must **authenticate as the GitHub App** to make those API calls. That's what `APP_ID` + `PRIVATE_KEY` do:
 
 ```
-GitHub → webhook POST → MergeGraph verifies signature → done
+PRIVATE_KEY  →  sign a JWT  →  installation access token  →  Octokit API calls
 ```
 
-No `APP_ID` or `PRIVATE_KEY` required to test that pipeline.
+Without them, MergeGraph can receive webhooks but cannot read PR details or post answers.
 
-### Why Phase 1 needs `APP_ID` + `PRIVATE_KEY`
-
-Phase 1 **calls GitHub's API** to:
-
-1. **Read** merged PR bodies, review comments, and changed files (not fully included in webhooks)
-2. **Write** `@mergegraph` reply comments on issues and PRs
-
-GitHub Apps authenticate to the API by signing a JWT with your private key:
-
-```
-PRIVATE_KEY → short-lived JWT → installation access token → Octokit API calls
-```
-
-Without these credentials, webhooks still arrive but extraction and replies cannot run.
+`WEBHOOK_SECRET` is separate — it only verifies that incoming webhooks are genuinely from GitHub.
 
 ## Register the app
 
 1. Go to [GitHub Developer Settings → GitHub Apps → New](https://github.com/settings/apps/new)
 2. Set **Webhook URL** to your Smee.io channel (local) or production URL
-3. Set **Webhook secret** — copy to `WEBHOOK_SECRET` in `.env`
-4. Generate a **private key** — save the `.pem` file, set `PRIVATE_KEY_PATH` in `.env`
-5. Copy the **App ID** to `APP_ID` in `.env`
+3. Set **Webhook secret** → `WEBHOOK_SECRET` on your server
+4. Generate a **private key** → save `.pem`, set `PRIVATE_KEY_PATH` on your server
+5. Copy **App ID** → `APP_ID` on your server
 
-## Permissions (Phase 1)
+In production, set these in your hosting dashboard (Render, Fly, etc.) — not in git.
+
+## Permissions
 
 | Permission | Access | Why |
 |------------|--------|-----|
 | Metadata | Read | Required |
 | Pull requests | Read | PR body, reviews, merge state |
-| Issues | Read & write | Issues + posting `@mergegraph` replies (PRs use the issues API) |
-| Contents | Read | Changed file paths from diffs |
+| Issues | Read & write | Post `@mergegraph` replies (PRs use the issues API) |
+| Contents | Read | Changed file paths |
 
 ## Webhook events
 
-Subscribe to:
-
-- [x] Installation
-- [x] Installation repositories
-- [x] Pull request
-- [x] Issue comment
-- [ ] Issues (Phase 2)
-- [ ] Release (Phase 2)
+- Installation
+- Installation repositories
+- Pull request
+- Issue comment
 
 ## Install on a test repo
 
-1. Open your app's **Public page** → **Install App**
-2. Select a test repository
-3. Merge a PR or comment `@mergegraph why was this built?` to test Phase 1
+1. App **Public page** → **Install App** → pick a test repo
+2. Merge a PR with a meaningful description
+3. Comment `@mergegraph why was this built?` on an issue or PR

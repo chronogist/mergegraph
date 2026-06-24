@@ -5,11 +5,9 @@ import {
   fetchMergedPRContext,
   getInstallationOctokit,
 } from "@mergegraph/github";
-import { assertGitHub } from "../../services/context.js";
 import type { MemoryCapsule } from "@mergegraph/storage-0g";
 import type { Services } from "../../services/context.js";
-import { assertCompute } from "../../services/context.js";
-import { mockMergedPRContext } from "../../services/mock.js";
+import { assertCompute, assertGitHub } from "../../services/context.js";
 import type { WebhookJobData } from "../../queue/boss.js";
 
 type PRPayload = {
@@ -47,22 +45,16 @@ export async function handlePullRequestEvent(
   const [owner, repoName] = repo.full_name.split("/");
   if (!owner || !repoName) return;
 
+  const github = assertGitHub(services);
   const compute = assertCompute(services);
+  const octokit = await getInstallationOctokit(github, installationId);
 
-  const prContext = services.env.DEV_MOCK
-    ? mockMergedPRContext(owner, repoName, pr.number, {
-        title: pr.title,
-        body: pr.body,
-      })
-    : await fetchMergedPRContext(
-        await getInstallationOctokit(
-          assertGitHub(services),
-          installationId,
-        ),
-        owner,
-        repoName,
-        pr.number,
-      );
+  const prContext = await fetchMergedPRContext(
+    octokit,
+    owner,
+    repoName,
+    pr.number,
+  );
 
   const extracted = await extractFromMergedPR(compute, prContext);
   if (extracted.length === 0) {
