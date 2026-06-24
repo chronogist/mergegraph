@@ -54,14 +54,30 @@ In production, set these in your hosting dashboard (Render, Fly, etc.) — not i
 **Subscribe to these** (checkboxes in the app registration form):
 
 - Pull request
+- Issues
 - Issue comment
+- Release
 
 **Automatic** — GitHub sends these to every GitHub App with webhooks active. They do **not** appear in the subscribe list and you cannot opt in or out:
 
 - Installation (`created`, `deleted`, …)
 - Installation repositories (`added`, `removed`)
 
-MergeGraph handles all four. The two you must check are **Pull request** and **Issue comment** — those drive Phase 1 (merged PR extraction and `@mergegraph` replies).
+MergeGraph handles all six event types above.
+
+## Web UI OAuth
+
+For the Phase 2 web UI, set these on your server and in `apps/web`:
+
+| Variable | Where | Purpose |
+|----------|-------|---------|
+| `GITHUB_APP_CLIENT_ID` | API + web | OAuth authorize |
+| `GITHUB_APP_CLIENT_SECRET` | API + web | OAuth token exchange |
+| `WEB_UI_URL` | API | CORS origin (e.g. `http://localhost:3001`) |
+| `NEXT_PUBLIC_APP_URL` | web | OAuth callback base URL |
+| `MERGEGRAPH_API_URL` | web | Backend API (e.g. `http://localhost:3000`) |
+
+In your GitHub App settings, set **Callback URL** to `{NEXT_PUBLIC_APP_URL}/api/auth/callback`.
 
 ## Install on a test repo
 

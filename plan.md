@@ -48,12 +48,12 @@ Four phases from skeleton to production-ready. Check items off as they ship.
 
 **Done when:** New repo install backfills recent history; web UI search returns nodes.
 
-- [ ] Closed issues extraction pipeline
-- [ ] `release.published` extraction pipeline
-- [ ] Backfill job on repo install (last N PRs + issues)
-- [ ] Optional merge summary comment on PR merge
-- [ ] Minimal web UI — repo list, search, node detail
-- [ ] GitHub OAuth via App for web UI auth
+- [x] Closed issues extraction pipeline
+- [x] `release.published` extraction pipeline
+- [x] Backfill job on repo install (last N PRs + issues)
+- [x] Optional merge summary comment on PR merge
+- [x] Minimal web UI — repo list, search, node detail
+- [x] GitHub OAuth via App for web UI auth
 
 ---
 
@@ -95,3 +95,16 @@ Four phases from skeleton to production-ready. Check items off as they ship.
 | `cf75ffd` | feat: add 0G Compute, Storage, and extractor packages |
 | `89134a2` | feat(worker): add merged PR extraction and @mergegraph Q&A |
 | `74da8c5` | docs: mark Phase 1 complete |
+
+### Phase 2
+
+| Commit | Description |
+|--------|-------------|
+| `b060ad8` | feat(github): add issue, release, and backfill list fetchers |
+| `d3ef3bc` | feat(extractor): add issue and release extraction pipelines |
+| `554484d` | feat(api): add shared knowledge ingestion service |
+| `89f098f` | feat(worker): add closed issue and release extraction handlers |
+| `2f7ac61` | feat(worker): add repo backfill on installation |
+| `4820cc6` | feat(worker): add optional merge summary comment on PR merge |
+| `5c74edf` | feat(api): add authenticated repo search and node routes |
+| `fa9ee9d` | feat(web): add minimal Next.js UI with GitHub OAuth |

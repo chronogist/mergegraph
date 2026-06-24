@@ -38,7 +38,7 @@ GitHub events → MergeGraph App → 0G Compute (extract) → 0G Storage (Memory
 1. **Install** the GitHub App on your org or repo.
 2. **Ingest** — merged PRs, closed issues, and releases are processed automatically in the background.
 3. **Store** — knowledge is saved as durable Memory Capsules on 0G Storage; PostgreSQL indexes it for fast search.
-4. **Query** — mention `@mergegraph` on any PR or issue, or use the web UI (coming soon).
+4. **Query** — mention `@mergegraph` on any PR or issue, or use the web UI (`npm run dev:web`).
 
 ## Built on 0G
 
@@ -67,8 +67,8 @@ See [plan.md](./plan.md) for the full MVP checklist.
 |-------|--------|
 | Architecture & design | Done |
 | Phase 0 — GitHub App skeleton + webhook pipeline | **Done** |
-| Phase 1 — PR extraction + `@mergegraph` Q&A | In progress |
-| Phase 2 — Backfill, issues/releases, web UI | Planned |
+| Phase 1 — PR extraction + `@mergegraph` Q&A | Done |
+| Phase 2 — Backfill, issues/releases, web UI | **Done** |
 | Phase 3 — Production hardening | Planned |
 
 ## Development
@@ -128,6 +128,16 @@ curl http://localhost:3000/health
 ```
 
 Install the app on a test repo and trigger an event — check server logs for `[worker] Processing ...`.
+
+### Web UI
+
+```bash
+# Terminal 3 — requires GITHUB_APP_CLIENT_ID/SECRET in .env
+npm run dev:web
+# → http://localhost:3001
+```
+
+Sign in with GitHub, pick a connected repo, and search knowledge nodes.
 
 ## License
 
