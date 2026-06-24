@@ -1,13 +1,8 @@
-import { and, eq } from "drizzle-orm";
-import { knowledgeNodes } from "@mergegraph/db";
 import { buildMergeMetadataNode, extractFromMergedPR } from "@mergegraph/extractor";
-import {
-  fetchMergedPRContext,
-  getInstallationOctokit,
-} from "@mergegraph/github";
-import type { MemoryCapsule } from "@mergegraph/storage-0g";
+import { fetchMergedPRContext, getInstallationOctokit } from "@mergegraph/github";
 import type { Services } from "../../services/context.js";
 import { assertCompute, assertGitHub } from "../../services/context.js";
+import { persistKnowledgeNodes } from "../../services/ingest.js";
 import type { WebhookJobData } from "../../queue/boss.js";
 
 type PRPayload = {
@@ -59,60 +54,21 @@ export async function handlePullRequestEvent(
   const extracted = await extractFromMergedPR(compute, prContext);
   const nodes = [buildMergeMetadataNode(prContext), ...extracted];
 
-  await services.db
-    .delete(knowledgeNodes)
-    .where(
-      and(
-        eq(knowledgeNodes.repoId, repo.id),
-        eq(knowledgeNodes.sourceGithubId, pr.number),
-        eq(knowledgeNodes.type, "pr_merge"),
-      ),
-    );
-
-  const nodeIds: string[] = [];
-
-  for (const node of nodes) {
-    const textForEmbedding = `${node.title}\n${node.summary}\n${node.body}`;
-    const embedding = await compute.embed(textForEmbedding, "document");
-
-    const [inserted] = await services.db
-      .insert(knowledgeNodes)
-      .values({
-        installationId,
-        repoId: repo.id,
-        type: node.type,
-        title: node.title,
-        summary: node.summary,
-        body: node.body,
-        confidence: node.confidence,
-        sourceEventType: "pull_request",
-        sourceGithubId: pr.number,
-        sourceUrl: prContext.url,
-        entities: node.entities,
-        embedding,
-        validFrom: prContext.mergedAt ? new Date(prContext.mergedAt) : new Date(),
-      })
-      .returning({ id: knowledgeNodes.id });
-
-    if (!inserted) continue;
-    nodeIds.push(inserted.id);
-
-    const capsule: MemoryCapsule = {
-      version: 1,
-      nodeId: inserted.id,
+  const nodeIds = await persistKnowledgeNodes(
+    services.db,
+    compute,
+    services.storage,
+    services.env,
+    {
       installationId,
+      repoId: repo.id,
       repoFullName: repo.full_name,
-      extractedAt: new Date().toISOString(),
-      extractor: {
-        model: services.env.OG_CHAT_MODEL,
-        provider: "0g-compute-router",
-      },
-      source: {
-        event: "pull_request.closed",
-        deliveryId: job.deliveryId,
-        githubUrls: [prContext.url],
-      },
-      node: { ...node, id: inserted.id },
+      sourceEventType: "pull_request",
+      sourceGithubId: pr.number,
+      sourceUrl: prContext.url,
+      deliveryId: job.deliveryId,
+      webhookEvent: "pull_request.closed",
+      validFrom: prContext.mergedAt ? new Date(prContext.mergedAt) : new Date(),
       rawContext: {
         title: prContext.title,
         body: prContext.body,
@@ -123,18 +79,9 @@ export async function handlePullRequestEvent(
         comments: prContext.comments,
         files: prContext.files,
       },
-    };
-
-    const stored = await services.storage.storeCapsule(capsule);
-
-    await services.db
-      .update(knowledgeNodes)
-      .set({
-        capsuleRootHash: stored.rootHash,
-        capsulePayload: stored.payload,
-      })
-      .where(eq(knowledgeNodes.id, inserted.id));
-  }
+    },
+    nodes,
+  );
 
   console.info(
     `[pull_request] Extracted ${nodeIds.length} nodes from PR #${pr.number} (${repo.full_name})`,
