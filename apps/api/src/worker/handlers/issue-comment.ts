@@ -7,6 +7,7 @@ import {
 } from "@mergegraph/github";
 import type { Services } from "../../services/context.js";
 import { assertCompute, assertGitHub } from "../../services/context.js";
+import { logMockComment } from "../../services/mock.js";
 import type { WebhookJobData } from "../../queue/boss.js";
 
 type CommentPayload = {
@@ -40,21 +41,28 @@ export async function handleIssueCommentEvent(
   const question = parseMergeGraphQuestion(body);
   if (!question) return;
 
-  const github = assertGitHub(services);
   const compute = assertCompute(services);
 
   const embedding = await compute.embed(question);
   const nodes = await hybridRetrieve(services.db, repo.id, embedding);
 
   if (nodes.length === 0) {
-    const octokit = await getInstallationOctokit(github, installationId);
+    const emptyReply =
+      "### MergeGraph\n\nNo relevant knowledge found yet for this repository. " +
+      "Knowledge is captured when PRs are merged — try again after your next merge.";
+
+    if (services.env.DEV_MOCK) {
+      logMockComment(repo.full_name ?? repo.name, issueNumber, emptyReply);
+      return;
+    }
+
+    const octokit = await getInstallationOctokit(assertGitHub(services), installationId);
     await postIssueComment(
       octokit,
       repo.owner.login,
       repo.name,
       issueNumber,
-      "### MergeGraph\n\nNo relevant knowledge found yet for this repository. " +
-        "Knowledge is captured when PRs are merged — try again after your next merge.",
+      emptyReply,
     );
     return;
   }
@@ -77,14 +85,18 @@ export async function handleIssueCommentEvent(
 
   const reply = `### MergeGraph\n\n${answer}\n\n**Sources**\n${sources}`;
 
-  const octokit = await getInstallationOctokit(github, installationId);
-  await postIssueComment(
-    octokit,
-    repo.owner.login,
-    repo.name,
-    issueNumber,
-    reply,
-  );
+  if (services.env.DEV_MOCK) {
+    logMockComment(repo.full_name ?? repo.name, issueNumber, reply);
+  } else {
+    const octokit = await getInstallationOctokit(assertGitHub(services), installationId);
+    await postIssueComment(
+      octokit,
+      repo.owner.login,
+      repo.name,
+      issueNumber,
+      reply,
+    );
+  }
 
   console.info(
     `[issue_comment] Answered @mergegraph on ${repo.full_name}#${issueNumber}`,

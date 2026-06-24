@@ -7,9 +7,10 @@ import {
   loadConfig,
   loadPrivateKey,
   type Env,
-  requireGitHubCredentials,
   requireComputeCredentials,
+  requireGitHubCredentials,
 } from "../config.js";
+import { createMockCompute } from "./mock.js";
 
 export type Services = {
   env: Env;
@@ -30,8 +31,9 @@ export function createServices(): Services {
       ? createGitHubApp({ appId: env.APP_ID, privateKey })
       : null;
 
-  const compute =
-    env.OG_COMPUTE_ROUTER_API_KEY && env.OG_COMPUTE_ROUTER_URL
+  const compute = env.DEV_MOCK
+    ? createMockCompute()
+    : env.OG_COMPUTE_ROUTER_API_KEY && env.OG_COMPUTE_ROUTER_URL
       ? createComputeClient({
           baseUrl: env.OG_COMPUTE_ROUTER_URL,
           apiKey: env.OG_COMPUTE_ROUTER_API_KEY,
@@ -39,6 +41,12 @@ export function createServices(): Services {
           embeddingModel: env.OG_EMBEDDING_MODEL,
         })
       : null;
+
+  if (env.DEV_MOCK) {
+    console.warn(
+      "[dev] DEV_MOCK=true — simulating GitHub API and 0G Compute (no external credentials)",
+    );
+  }
 
   const storage = createStorageClient({
     rpcUrl: env.OG_RPC_URL ?? "",

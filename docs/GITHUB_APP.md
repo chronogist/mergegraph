@@ -1,6 +1,33 @@
 # GitHub App Setup
 
-MergeGraph runs as a **GitHub App**. Not every credential is needed on day one — it depends on what you're testing.
+MergeGraph runs as a **GitHub App**.
+
+## Who configures credentials?
+
+| Person | What they do | Needs `.env`? |
+|--------|--------------|---------------|
+| **Repo user** (your teammate) | Installs the app on their repo | **No** — click "Install" in GitHub |
+| **MergeGraph operator** (you, hosting the server) | Runs the backend | **Yes** — secrets on the server only |
+| **Local developer** | Tests without real APIs | **No** — use `DEV_MOCK=true` (2 vars only) |
+
+End users never see or touch credentials. They install a GitHub App like any other (Dependabot, Codecov, etc.).
+
+Production secrets belong in your **hosting provider's environment** (Render, Fly, Railway) — not committed to git.
+
+## Local testing without credentials
+
+```bash
+# .env — only these two are required with mock mode
+DATABASE_URL=postgresql://mergegraph:mergegraph@localhost:5432/mergegraph
+WEBHOOK_SECRET=local-test-secret
+DEV_MOCK=true
+```
+
+Then run `node scripts/test-webhook.mjs pull_request` and `node scripts/test-webhook.mjs issue_comment` — full Phase 1 loop, no GitHub or 0G keys.
+
+---
+
+Not every credential is needed on day one — it depends on what you're testing.
 
 ## What each credential does
 

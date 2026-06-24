@@ -23,6 +23,10 @@ const envSchema = z.object({
   OG_RPC_URL: z.string().url().optional(),
   OG_INDEXER_URL: z.string().url().optional(),
   OG_STORAGE_PRIVATE_KEY: z.string().optional(),
+  DEV_MOCK: z
+    .enum(["true", "false", "1", "0"])
+    .default("false")
+    .transform((v) => v === "true" || v === "1"),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -46,22 +50,24 @@ export function loadPrivateKey(env: Env): string | undefined {
   return undefined;
 }
 
-export function requireGitHubCredentials<T>(github: T | null, _env: Env): T {
+export function requireGitHubCredentials<T>(github: T | null, env: Env): T {
+  if (env.DEV_MOCK) {
+    throw new Error("DEV_MOCK is enabled — use the mock code path instead of GitHub API");
+  }
   if (!github) {
     throw new Error(
-      "GitHub API credentials missing. Set APP_ID and PRIVATE_KEY_PATH in .env — " +
-        "required to fetch PR context and post @mergegraph replies. " +
-        "See docs/GITHUB_APP.md",
+      "GitHub API credentials missing. Set APP_ID and PRIVATE_KEY_PATH, or use " +
+        "DEV_MOCK=true for local testing without GitHub API access. See docs/GITHUB_APP.md",
     );
   }
   return github;
 }
 
-export function requireComputeCredentials<T>(compute: T | null, _env: Env): T {
+export function requireComputeCredentials<T>(compute: T | null, env: Env): T {
   if (!compute) {
     throw new Error(
-      "0G Compute credentials missing. Set OG_COMPUTE_ROUTER_URL and " +
-        "OG_COMPUTE_ROUTER_API_KEY in .env — required for extraction and Q&A.",
+      "0G Compute credentials missing. Set OG_COMPUTE_ROUTER_API_KEY, or use " +
+        "DEV_MOCK=true for local testing without 0G.",
     );
   }
   return compute;

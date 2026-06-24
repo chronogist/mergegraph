@@ -79,14 +79,19 @@ See [plan.md](./plan.md) for the full MVP checklist.
 - Docker (for local Postgres)
 - A [GitHub App](https://docs.github.com/en/apps/creating-github-apps) — see [docs/GITHUB_APP.md](./docs/GITHUB_APP.md)
 
-### Credentials (what you actually need)
+### Credentials
 
-| Phase | Required in `.env` |
-|-------|-------------------|
-| Phase 0 — webhook plumbing | `WEBHOOK_SECRET`, `DATABASE_URL` |
-| Phase 1 — PR extraction + `@mergegraph` | above + `APP_ID`, `PRIVATE_KEY_PATH`, `OG_COMPUTE_ROUTER_API_KEY` |
+**Repo users never configure credentials** — they only install the GitHub App.
 
-`APP_ID` and `PRIVATE_KEY` are only needed when MergeGraph **calls GitHub's API** (fetch PR details, post replies). Phase 0 reads everything from the webhook payload itself.
+Only the person **hosting MergeGraph** sets secrets (on Render/Fly/etc. in production, or `.env` locally).
+
+| Mode | `.env` needed |
+|------|---------------|
+| **Local test (recommended)** | `DATABASE_URL`, `WEBHOOK_SECRET`, `DEV_MOCK=true` |
+| **Local test with real GitHub + 0G** | above + `APP_ID`, `PRIVATE_KEY_PATH`, `OG_COMPUTE_ROUTER_API_KEY` |
+| **Production** | Same secrets in hosting dashboard — not in git |
+
+With `DEV_MOCK=true`, run the full Phase 1 loop locally via `scripts/test-webhook.mjs` — no external API keys.
 
 ### Setup
 
@@ -96,8 +101,7 @@ cd mergegraph
 npm install
 
 cp .env.example .env
-# Phase 0: WEBHOOK_SECRET + DATABASE_URL
-# Phase 1: also APP_ID, PRIVATE_KEY_PATH, OG_COMPUTE_ROUTER_API_KEY
+# Local: DATABASE_URL + WEBHOOK_SECRET + DEV_MOCK=true is enough
 
 docker compose up -d
 npm run db:migrate
